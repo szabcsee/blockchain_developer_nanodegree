@@ -1,0 +1,14 @@
+{
+  "name": "block_hashing",
+  "version": "1.0.0",
+  "description": "Practice for block hashing",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Szabolcs Bokonyi",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.0.0"
+  }
+}

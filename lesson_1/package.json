@@ -1,0 +1,15 @@
+{
+  "name": "cryptojs_hashing",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Trying out the SHA256 hashing with cryptojs",
+  "main": "hashing.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Szabolcs Bokonyi",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.0.0"
+  }
+}

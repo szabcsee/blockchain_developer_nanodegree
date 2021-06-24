@@ -69,13 +69,14 @@ class Blockchain {
             }
             block.height = self.chain.length;
             block.timeStamp = new Date().getTime().toString().slice(0,-3);
+            block.hash = null;
             block.hash = SHA256(JSON.stringify(block)).toString();
-            const errorLog = await self.validateChain();
-            if(errorLog.length !== 0){                   
-                reject("The block cannot be added, the chain has been tampered.")              
-            }
             self.chain.push(block);
             self.height = self.chain.length;
+            const errorLog = await self.validateChain();
+            if(errorLog.length !== 0){                   
+                reject(errorLog);              
+            }
             resolve (block);         
         });
     }
@@ -125,9 +126,12 @@ class Blockchain {
         let fiveMinutes = 5 * 60000;
         return new Promise(async (resolve, reject) => {
             if ((currentTime <= time + fiveMinutes) && bitcoinMessage.verify(message, address, signature)) {
-                let block = self._addBlock(new BlockClass.Block({owner: address, star}));
-                
-                resolve(block);
+                try {
+                    let block = self._addBlock(new BlockClass.Block({owner: address, star}));
+                    resolve(block);
+                } catch (errorLog) {
+                    reject(errorLog);
+                }          
             } else {
                 reject("You ran out of the five minutes time.")
             }
@@ -185,7 +189,7 @@ class Blockchain {
                     if (data.owner === address){
                         stars.push(data);
                     } else {
-                        reject('Stars and address mismatch.')
+                        reject('Stars and address mismatch.');
                     }
                 }
             });
@@ -203,16 +207,17 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            let previousBlock;
             self.chain.forEach((b) => {
-                if (previousBlock instanceof BlockClass.Block && previousBlock.hash != b.hash) {
-                    errorLog.push({
-                        height: b.height,
-                        hash: b.hash,
-                        errorMessage: 'PreviousBlock hash is invalid'
-                    });
+                if (b.height > 0) {
+                    let previousBlock = self.chain[b.height -1];
+                    if (previousBlock.hash != b.previousBlockHash) {
+                        errorLog.push({
+                            height: b.height,
+                            hash: b.hash,
+                            errorMessage: 'PreviousBlock hash is invalid'
+                        });
+                    }
                 }
-                previousBlock = b;
                 if (!b.validate()) {
                     errorLog.push({
                         height: b.height,

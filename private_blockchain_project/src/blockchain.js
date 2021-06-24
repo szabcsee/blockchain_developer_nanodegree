@@ -123,9 +123,9 @@ class Blockchain {
         let self = this;
         let time = parseInt(message.split(':')[1]);
         let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
-        let fiveMinutes = 5 * 60000;
+        let fiveMinutes = 5 * 60;
         return new Promise(async (resolve, reject) => {
-            if ((currentTime <= time + fiveMinutes) && bitcoinMessage.verify(message, address, signature)) {
+            if ((currentTime - time >= fiveMinutes) && bitcoinMessage.verify(message, address, signature)) {
                 try {
                     let block = self._addBlock(new BlockClass.Block({owner: address, star}));
                     resolve(block);
@@ -133,7 +133,7 @@ class Blockchain {
                     reject(errorLog);
                 }          
             } else {
-                reject("You ran out of the five minutes time.")
+                reject(new Error('Request time out.'))
             }
         });
     }

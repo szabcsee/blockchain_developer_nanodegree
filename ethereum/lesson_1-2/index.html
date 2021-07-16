@@ -19,6 +19,9 @@
     <input id="userInput" type="text">
 
     <button id="setMessageButton">Set secret message</button>
+
+    <button id="metamaskConnect">Connect to Metamask</button>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -29,11 +32,11 @@
         if (typeof web3 !== 'undefined') {
             web3 = new Web3(web3.currentProvider);
         } else {
-            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+            web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/490427a384674028be8bc56123fda020"));
         }
 
         // Set a default account
-        web3.eth.defaultAccount = web3.eth.accounts[0];
+        web3.eth.defaultAccount = '0x55763dED5BCE10f8886861BE54d418Cef6EDEc17';
 
         // Get the contract address
         var RemixContract = new web3.eth.Contract([
@@ -65,14 +68,14 @@
                 "stateMutability": "view",
                 "type": "function"
             }
-        ], '0x4170b3c117aeD52F02125f0e6cF7BE9eE79F5a69', {from: '0xfD8C638DB9F4B3192D98fa7Bdba06532de616677', gas: 2000000});
+        ], '0x92a74DbeF71C40298C00480c58CA4b86d63B9882', {from: '0x55763dED5BCE10f8886861BE54d418Cef6EDEc17', gas: 2000000});
         $("#setMessageButton").click(function () {
             console.log(' I was clicked');
-            console.log(web3.eth.accounts[0]);
             RemixContract.methods.setMessage($("#userInput").val()).send().then(console.log);
             console.log('input field:')
             console.log($("#userInput").val())
         });
+        $("#metamaskConnect").click(() => { ethereum.request({ method: 'eth_requestAccounts' }); });
         $(document).ready(function() {
             console.log('loaded');
             RemixContract.methods.getMessage().call().then(result => {
